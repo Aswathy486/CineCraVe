@@ -1,5 +1,4 @@
 package com.cinecrave.model;
-
 public class Movie {
     private int movieId;
     private String title;
@@ -19,7 +18,6 @@ public class Movie {
         this.description = description;
     }
     
-    // Getters for all fields
     public int getMovieId() { return movieId; }
     public String getTitle() { return title; }
     public int getDurationMinutes() { return durationMinutes; }
@@ -27,6 +25,4 @@ public class Movie {
     public String getLanguage() { return language; }
     public String getRating() { return rating; }
     public String getDescription() { return description; }
-    
-    // No setters needed for read-only display purposes
 }
