@@ -1,6 +1,5 @@
 package com.cinecrave.model;
 
-// Abstract base class for all users
 public abstract class User {
     protected int userId;
     protected String name;
@@ -14,7 +13,6 @@ public abstract class User {
         this.phone = phone;
     }
 
-    // Getters for primary access fields
     public int getUserId() { return userId; }
     public String getName() { return name; }
     public String getEmail() { return email; }
