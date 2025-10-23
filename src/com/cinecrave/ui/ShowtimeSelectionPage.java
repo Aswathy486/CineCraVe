@@ -30,7 +30,7 @@ public class ShowtimeSelectionPage extends JFrame {
         setLocationRelativeTo(parentFrame);
         setLayout(new BorderLayout());
 
-        
+       
         JLabel header = new JLabel("Available Showtimes for " + movie.getTitle(), SwingConstants.CENTER);
         header.setFont(new Font("Arial", Font.BOLD, 18));
         header.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -42,11 +42,11 @@ public class ShowtimeSelectionPage extends JFrame {
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         add(scrollPane, BorderLayout.CENTER);
 
-        // Back Button
+        
         JButton backBtn = new JButton("← Back to Movies");
         backBtn.addActionListener(e -> {
             dispose();
-            parentFrame.setVisible(true); 
+            parentFrame.setVisible(true);
         });
         JPanel southPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         southPanel.add(backBtn);
@@ -60,7 +60,7 @@ public class ShowtimeSelectionPage extends JFrame {
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.setBorder(BorderFactory.createEmptyBorder(10, 15, 10, 15));
 
-        // Fetch the data
+        
         List<Show> showtimes = bookingService.getShowtimesByMovieId(selectedMovie.getMovieId());
 
         if (showtimes.isEmpty()) {
@@ -72,10 +72,11 @@ public class ShowtimeSelectionPage extends JFrame {
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("EEE, MMM d");
         
         for (Show show : showtimes) {
+            
             JButton showtimeBtn = new JButton(
                 "<html><b>" + show.getStartTime().format(timeFormatter) + "</b> (" + 
                 show.getStartTime().format(dateFormatter) + 
-                ") @ $" + String.format("%.2f", show.getBasePrice()) + "</html>"
+                ") @ Price: ₹" + String.format("%.2f", show.getBasePrice()) + "</html>"
             );
             showtimeBtn.setAlignmentX(Component.LEFT_ALIGNMENT);
             showtimeBtn.setPreferredSize(new Dimension(450, 40));
@@ -84,9 +85,11 @@ public class ShowtimeSelectionPage extends JFrame {
             
             showtimeBtn.addActionListener(e -> {
                 
-                JOptionPane.showMessageDialog(this, 
-                    "Selected Show: " + show.getStartTime().format(timeFormatter) + 
-                    ".\nNext: Seat Selection."
+                dispose();
+                new SeatSelectionPage(
+                    loggedInCustomer, 
+                    bookingService, 
+                    show 
                 );
             });
             
