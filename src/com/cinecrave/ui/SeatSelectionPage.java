@@ -18,13 +18,11 @@ public class SeatSelectionPage extends JFrame {
     private final BookingService bookingService;
     private final Show selectedShow;
     
-    
     private final Map<String, JButton> seatButtons = new HashMap<>();
     private final List<String> selectedSeats = new ArrayList<>();
     private JLabel totalLabel;
     
-    
-    private static final int ROWS = 10; 
+    private static final int ROWS = 10;
     private static final int COLS = 15;
 
     public SeatSelectionPage(Customer customer, BookingService service, Show show) {
@@ -38,7 +36,7 @@ public class SeatSelectionPage extends JFrame {
         setLocationRelativeTo(null);
         setLayout(new BorderLayout(10, 10));
 
-       
+        
         JLabel screenLabel = new JLabel("SCREEN", SwingConstants.CENTER);
         screenLabel.setFont(new Font("Arial", Font.BOLD, 20));
         screenLabel.setForeground(Color.WHITE);
@@ -51,13 +49,15 @@ public class SeatSelectionPage extends JFrame {
         JPanel seatGridPanel = createSeatGridPanel();
         add(new JScrollPane(seatGridPanel), BorderLayout.CENTER);
 
-       
+        
         JPanel actionBar = createActionBar();
         add(actionBar, BorderLayout.SOUTH);
+
         simulateSeatMap(); 
         
         setVisible(true);
     }
+    
     private void simulateSeatMap() {
         
         String[] booked = {"C5", "C6", "D1"};
@@ -66,6 +66,7 @@ public class SeatSelectionPage extends JFrame {
             if (btn != null) {
                 btn.setBackground(Color.RED);
                 btn.setEnabled(false);
+                btn.setToolTipText(seatId + " - BOOKED");
             }
         }
     }
@@ -74,7 +75,7 @@ public class SeatSelectionPage extends JFrame {
         JPanel gridPanel = new JPanel(new GridLayout(ROWS + 1, COLS + 1, 5, 5));
         gridPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        
+       
         gridPanel.add(new JLabel("")); 
         for (int c = 1; c <= COLS; c++) {
             JLabel header = new JLabel(String.valueOf(c), SwingConstants.CENTER);
@@ -98,10 +99,10 @@ public class SeatSelectionPage extends JFrame {
                 
                 
                 if (r < 2) { 
-                    seatBtn.setBackground(new Color(150, 200, 255)); 
+                    seatBtn.setBackground(new Color(150, 200, 255));
                     seatBtn.setToolTipText(seatId + " (PREMIUM) - ₹250.00");
                 } else {
-                    seatBtn.setBackground(Color.LIGHT_GRAY); 
+                    seatBtn.setBackground(Color.LIGHT_GRAY);
                     seatBtn.setToolTipText(seatId + " (REGULAR) - ₹150.00");
                 }
 
@@ -124,7 +125,7 @@ public class SeatSelectionPage extends JFrame {
         totalLabel.setFont(new Font("Arial", Font.BOLD, 16));
         panel.add(totalLabel, BorderLayout.WEST);
 
-      
+        
         JButton bookBtn = new JButton("Proceed to Payment");
         bookBtn.setBackground(new Color(75, 0, 130));
         bookBtn.setForeground(Color.WHITE);
@@ -134,10 +135,11 @@ public class SeatSelectionPage extends JFrame {
                 return;
             }
             
-            JOptionPane.showMessageDialog(this, 
-                "Reserving " + selectedSeats.size() + " seats for: " + selectedShow.getShowId() + 
-                "\nTotal amount: " + totalLabel.getText(), 
-                "Proceeding to Payment", JOptionPane.INFORMATION_MESSAGE
+            dispose();
+            new PaymentConfirmationPage(
+                loggedInCustomer,
+                bookingService,
+                selectedSeats.size() + "-" + selectedShow.getShowId() 
             );
         });
         
@@ -148,7 +150,6 @@ public class SeatSelectionPage extends JFrame {
         return panel;
     }
     
-   
     private class SeatActionListener implements ActionListener {
         private final String seatId;
 
@@ -160,13 +161,13 @@ public class SeatSelectionPage extends JFrame {
         public void actionPerformed(ActionEvent e) {
             JButton btn = (JButton) e.getSource();
             
-          
-            double seatPrice = (seatId.charAt(0) < 'C') ? 250.00 : 150.00;
+            
+            boolean isPremium = seatId.charAt(0) < 'C';
             
             if (selectedSeats.contains(seatId)) {
-              
+                
                 selectedSeats.remove(seatId);
-                btn.setBackground((seatId.charAt(0) < 'C') ? new Color(150, 200, 255) : Color.LIGHT_GRAY);
+                btn.setBackground(isPremium ? new Color(150, 200, 255) : Color.LIGHT_GRAY);
                 btn.setBorder(BorderFactory.createEmptyBorder());
             } else {
                
@@ -179,13 +180,12 @@ public class SeatSelectionPage extends JFrame {
         }
     }
     
-  
     private void updateTotal() {
         double currentTotal = 0.0;
         double baseShowPrice = selectedShow.getBasePrice();
         
         for (String seatId : selectedSeats) {
-           
+            
             double seatModifier = (seatId.charAt(0) < 'C') ? 250.00 : 150.00; 
             currentTotal += baseShowPrice + seatModifier; 
         }
