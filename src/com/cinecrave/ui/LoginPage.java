@@ -1,5 +1,4 @@
 package com.cinecrave.ui;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
