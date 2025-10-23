@@ -83,7 +83,6 @@ public class SignupPage extends JFrame {
                     dispose();
                     new LoginPage();
                 } else {
-                    // This handles specific service-layer errors (like duplicate email)
                     JOptionPane.showMessageDialog(this, "Registration failed. Email may already be in use.", "Registration Error", JOptionPane.ERROR_MESSAGE);
                 }
             } catch (Exception ex) {
