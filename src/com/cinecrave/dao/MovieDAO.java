@@ -1,5 +1,4 @@
 package com.cinecrave.dao;
-
 import com.cinecrave.model.Movie;
 import java.sql.*;
 import java.util.ArrayList;
