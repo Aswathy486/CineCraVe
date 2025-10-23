@@ -17,13 +17,8 @@ public class MovieDAO {
 
             while (rs.next()) {
                 movies.add(new Movie(
-                    rs.getInt("movie_id"), 
-                    rs.getString("title"), 
-                    rs.getInt("duration_minutes"),
-                    rs.getString("genre"), 
-                    rs.getString("language"), 
-                    rs.getString("rating"), 
-                    rs.getString("description")
+                    rs.getInt("movie_id"), rs.getString("title"), rs.getInt("duration_minutes"),
+                    rs.getString("genre"), rs.getString("language"), rs.getString("rating"), rs.getString("description")
                 ));
             }
         }
@@ -42,13 +37,8 @@ public class MovieDAO {
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     movies.add(new Movie(
-                        rs.getInt("movie_id"), 
-                        rs.getString("title"), 
-                        rs.getInt("duration_minutes"),
-                        rs.getString("genre"), 
-                        rs.getString("language"), 
-                        rs.getString("rating"), 
-                        rs.getString("description")
+                        rs.getInt("movie_id"), rs.getString("title"), rs.getInt("duration_minutes"),
+                        rs.getString("genre"), rs.getString("language"), rs.getString("rating"), rs.getString("description")
                     ));
                 }
             }
