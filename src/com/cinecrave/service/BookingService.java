@@ -3,9 +3,11 @@ package com.cinecrave.service;
 import com.cinecrave.dao.UserDAO;
 import com.cinecrave.dao.MovieDAO;
 import com.cinecrave.dao.ShowDAO;
+import com.cinecrave.dao.BookingDAO;
 import com.cinecrave.model.User;
 import com.cinecrave.model.Movie;
 import com.cinecrave.model.Show;
+import com.cinecrave.model.Booking;
 
 import java.sql.SQLException;
 import java.util.Collections;
@@ -16,14 +18,14 @@ public class BookingService {
     private final UserDAO userDAO;
     private final MovieDAO movieDAO;
     private final ShowDAO showDAO;
+    private final BookingDAO bookingDAO;
 
     public BookingService() {
         this.userDAO = new UserDAO();
         this.movieDAO = new MovieDAO();
         this.showDAO = new ShowDAO();
+        this.bookingDAO = new BookingDAO();
     }
-
-   
 
     public User authenticateUser(String email, String password) throws Exception {
         try {
@@ -47,21 +49,15 @@ public class BookingService {
         }
     }
     
-   
-
     public boolean updateProfile(int userId, String name, String phone) throws Exception {
-        
         System.out.println("SERVICE CONTRACT: User " + userId + " profile update called.");
         return true; 
     }
     
     public boolean resetPassword(int userId, String newPassword) throws Exception {
-        
         System.out.println("SERVICE CONTRACT: User " + userId + " password reset called.");
         return true; 
     }
-
-    
 
     public List<Movie> getAllAvailableMovies() {
         try {
@@ -89,6 +85,17 @@ public class BookingService {
             return showDAO.getShowtimesByMovieId(movieId);
         } catch (SQLException e) {
             System.err.println("Database Error fetching showtimes: " + e.getMessage());
+            return Collections.emptyList();
+        }
+    }
+    
+    
+    public List<Booking> getBookingHistory(int customerId) {
+        try {
+            return bookingDAO.getBookingsByCustomerId(customerId);
+        } catch (SQLException e) {
+            System.err.println("Database Error fetching booking history: " + e.getMessage());
+            e.printStackTrace();
             return Collections.emptyList();
         }
     }
