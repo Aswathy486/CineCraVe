@@ -73,13 +73,10 @@ public class HomePage extends JFrame {
                     HomePage.this.setVisible(false);
 
                     if (item.equals("My Bookings")) {
-                        
-                        new BookingStatusPage(HomePage.this, loggedInCustomer);
+                        new BookingStatusPage(HomePage.this, loggedInCustomer, bookingService);
                     } else if (item.equals("Profile")) {
-                       
                         new ProfilePage(HomePage.this, loggedInCustomer, bookingService);
                     } else {
-                        
                         HomePage.this.setVisible(true);
                     }
                 }
@@ -202,12 +199,13 @@ public class HomePage extends JFrame {
         card.add(details);
         card.add(Box.createVerticalStrut(5));
         
+        
         card.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 HomePage.this.setVisible(false); 
                 
-                new ShowtimeSelectionPage(
+                new MovieDetailPage( 
                     HomePage.this, 
                     loggedInCustomer, 
                     bookingService, 
