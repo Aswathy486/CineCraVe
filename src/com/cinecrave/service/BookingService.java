@@ -1,110 +1,97 @@
-package com.cinecrave.service;
+package com.cinecrave.dao;
 
-import com.cinecrave.dao.UserDAO;
-import com.cinecrave.dao.MovieDAO;
-import com.cinecrave.dao.ShowDAO;
-import com.cinecrave.dao.BookingDAO;
-import com.cinecrave.model.User;
-import com.cinecrave.model.Movie;
 import com.cinecrave.model.Show;
 import com.cinecrave.model.Booking;
-
-import java.sql.SQLException;
-import java.util.Collections;
+import java.sql.*;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
-public class BookingService {
+public class BookingDAO {
+
+    private static final String SELECT_BY_CUSTOMER_ID_SQL = 
+        "SELECT b.booking_id, b.customer_id, b.show_id, b.booking_time, b.total_price, b.status, GROUP_CONCAT(bs.seat_number) AS seats " +
+        "FROM Booking b JOIN BookedSeat bs ON b.booking_id = bs.booking_id " +
+        "WHERE b.customer_id = ? GROUP BY b.booking_id ORDER BY b.booking_time DESC";
     
-    private final UserDAO userDAO;
-    private final MovieDAO movieDAO;
-    private final ShowDAO showDAO;
-    private final BookingDAO bookingDAO;
+    private static final String INSERT_BOOKING_SQL = 
+        "INSERT INTO Booking (customer_id, show_id, booking_time, total_price, status) VALUES (?, ?, NOW(), ?, 'CONFIRMED')";
+    
+    private static final String INSERT_BOOKED_SEAT_SQL = 
+        "INSERT INTO BookedSeat (booking_id, show_id, seat_number, final_price, seat_status) VALUES (?, ?, ?, ?, 'BOOKED')";
 
-    public BookingService() {
-        this.userDAO = new UserDAO();
-        this.movieDAO = new MovieDAO();
-        this.showDAO = new ShowDAO();
-        this.bookingDAO = new BookingDAO();
-    }
+    public List<Booking> getBookingsByCustomerId(int customerId) throws SQLException {
+        List<Booking> bookings = new ArrayList<>();
 
-    public User authenticateUser(String email, String password) throws Exception {
-        try {
-            return userDAO.authenticate(email, password);
-        } catch (SQLException e) {
-            System.err.println("Authentication Database Error: " + e.getMessage());
-            throw new Exception("A system error occurred during login verification.", e); 
-        }
-    }
+        try (Connection conn = DBManager.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(SELECT_BY_CUSTOMER_ID_SQL)) {
 
-    public boolean signUpCustomer(String name, String email, String phone, String password) throws Exception {
-        try {
-            return userDAO.register(name, email, phone, password); 
-        } catch (SQLException e) {
-            System.err.println("Registration Database Error: " + e.getMessage());
-            
-            if (e.getSQLState().startsWith("23")) { 
-                throw new Exception("Registration failed. Email is already in use.", e);
+            stmt.setInt(1, customerId);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    LocalDateTime bookingTime = rs.getTimestamp("booking_time").toLocalDateTime();
+
+                    Booking booking = new Booking(
+                        rs.getInt("booking_id"),
+                        rs.getInt("customer_id"),
+                        rs.getInt("show_id"),
+                        bookingTime,
+                        rs.getDouble("total_price"),
+                        rs.getString("status"),
+                        rs.getString("seats")
+                    );
+                    bookings.add(booking);
+                }
             }
-            throw new Exception("A system error occurred during registration.", e); 
         }
-    }
-    
-    public boolean updateProfile(int userId, String name, String phone) throws Exception {
-        System.out.println("SERVICE CONTRACT: User " + userId + " profile update called.");
-        return true; 
-    }
-    
-    public boolean resetPassword(int userId, String newPassword) throws Exception {
-        System.out.println("SERVICE CONTRACT: User " + userId + " password reset called.");
-        return true; 
+        return bookings;
     }
 
-    public List<Movie> getAllAvailableMovies() {
-        try {
-            return movieDAO.getAllMovies();
-        } catch (SQLException e) {
-            System.err.println("Database Error fetching movies: " + e.getMessage());
-            return Collections.emptyList(); 
-        }
-    }
-    
-    public List<Movie> searchMoviesByTitle(String title) {
-        if (title == null || title.trim().isEmpty() || title.equals("Search movies....")) {
-            return getAllAvailableMovies();
-        }
-        try {
-            return movieDAO.searchMoviesByTitle(title);
-        } catch (SQLException e) {
-            System.err.println("Database Error searching movies: " + e.getMessage());
-            return Collections.emptyList();
-        }
-    }
+    public int createBooking(int customerId, Show show, List<String> seatNumbers, double totalPrice) throws SQLException {
+        Connection conn = null;
+        int bookingId = -1;
 
-    public List<Show> getShowtimesByMovieId(int movieId) {
         try {
-            return showDAO.getShowtimesByMovieId(movieId);
+            conn = DBManager.getConnection();
+            conn.setAutoCommit(false);
+
+            PreparedStatement bookingStmt = conn.prepareStatement(INSERT_BOOKING_SQL, Statement.RETURN_GENERATED_KEYS);
+            bookingStmt.setInt(1, customerId);
+            bookingStmt.setInt(2, show.getShowId());
+            bookingStmt.setDouble(3, totalPrice);
+            bookingStmt.executeUpdate();
+
+            ResultSet generatedKeys = bookingStmt.getGeneratedKeys();
+            if (generatedKeys.next()) {
+                bookingId = generatedKeys.getInt(1);
+            } else {
+                throw new SQLException("Failed to retrieve auto-generated booking ID.");
+            }
+            
+            PreparedStatement seatStmt = conn.prepareStatement(INSERT_BOOKED_SEAT_SQL);
+            
+            double baseShowPrice = show.getBasePrice();
+
+            for (String seatId : seatNumbers) {
+                double seatModifier = (seatId.charAt(0) < 'C') ? 250.00 : 150.00; 
+                double finalSeatPrice = baseShowPrice + seatModifier;
+
+                seatStmt.setInt(1, bookingId);
+                seatStmt.setInt(2, show.getShowId());
+                seatStmt.setString(3, seatId);
+                seatStmt.setDouble(4, finalSeatPrice);
+                seatStmt.addBatch();
+            }
+            seatStmt.executeBatch();
+
+            conn.commit();
+            return bookingId;
         } catch (SQLException e) {
-            System.err.println("Database Error fetching showtimes: " + e.getMessage());
-            return Collections.emptyList();
-        }
-    }
-    
-    public List<Booking> getBookingHistory(int customerId) {
-        try {
-            return bookingDAO.getBookingsByCustomerId(customerId);
-        } catch (SQLException e) {
-            System.err.println("Database Error fetching booking history: " + e.getMessage());
-            e.printStackTrace();
-            return Collections.emptyList();
-        }
-    }
-    
-    public int processBooking(int customerId, Show show, List<String> seatNumbers, double totalPrice) throws Exception {
-        try {
-            return bookingDAO.createBooking(customerId, show, seatNumbers, totalPrice);
-        } catch (SQLException e) {
-            System.err.println("Database Error during booking process: " + e.getMessage());
-            throw new Exception("Booking failed due to a system error.", e);
+            if (conn != null) { conn.rollback(); } 
+            throw e;
+        } finally {
+            if (conn != null) { conn.setAutoCommit(true); conn.close(); }
         }
     }
 }
