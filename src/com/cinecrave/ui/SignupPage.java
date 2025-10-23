@@ -63,7 +63,7 @@ public class SignupPage extends JFrame {
         backLabel.setBounds(250, 360, 150, 25);
         add(backLabel);
 
-        // --- Event Listener with Logic ---
+        
         createBtn.addActionListener(e -> {
             String name = nameField.getText();
             String email = emailField.getText();
@@ -76,7 +76,8 @@ public class SignupPage extends JFrame {
             }
             
             try {
-                boolean success = bookingService.signUpCustomer(name, email, phone, password);
+               
+                boolean success = bookingService.signUpCustomer(name, email, phone, password); 
 
                 if (success) {
                     JOptionPane.showMessageDialog(this, "Account created successfully! Please log in.", "Success", JOptionPane.INFORMATION_MESSAGE);
