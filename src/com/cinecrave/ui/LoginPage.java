@@ -22,7 +22,6 @@ public class LoginPage extends JFrame {
         setLocationRelativeTo(null);
         setLayout(new GridLayout(1, 2));
 
-        // --- Left Panel (Logo) ---
         JPanel leftPanel = new JPanel();
         leftPanel.setBackground(new Color(255, 252, 245));
         leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS));
@@ -39,12 +38,11 @@ public class LoginPage extends JFrame {
         leftPanel.add(tagline);
         leftPanel.add(Box.createVerticalGlue());
 
-        // --- Right Panel (Login Form) ---
         JPanel rightPanel = new JPanel();
         rightPanel.setBackground(Color.WHITE);
         rightPanel.setLayout(null);
 
-        JLabel emailLabel = new JLabel("Email / Phone:");
+        JLabel emailLabel = new JLabel("Email / Username:"); 
         emailLabel.setBounds(100, 80, 150, 25);
         rightPanel.add(emailLabel);
 
@@ -80,7 +78,6 @@ public class LoginPage extends JFrame {
         forgotLabel.setForeground(new Color(75, 0, 130));
         rightPanel.add(forgotLabel);
 
-        // --- Event Listener with Logic ---
         loginBtn.addActionListener(e -> {
             String email = emailField.getText();
             String password = new String(passwordField.getPassword());
