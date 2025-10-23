@@ -5,9 +5,10 @@ import com.cinecrave.model.Customer;
 import java.sql.*;
 
 public class UserDAO {
-    // Assumes phone field holds the 'password' for simplification
-    private static final String AUTH_SQL = "SELECT user_id, name, email, phone, role FROM User WHERE email = ? AND phone = ?"; 
-    private static final String REGISTER_USER_SQL = "INSERT INTO User (name, email, phone, role) VALUES (?, ?, ?, 'Customer')";
+    
+    private static final String AUTH_SQL = "SELECT user_id, name, email, phone, role FROM User WHERE email = ? AND password_hash = ?"; 
+    
+    private static final String REGISTER_USER_SQL = "INSERT INTO User (name, email, phone, password_hash, role) VALUES (?, ?, ?, ?, 'Customer')";
     private static final String REGISTER_CUSTOMER_SQL = "INSERT INTO Customer (user_id) VALUES (?)";
 
     public User authenticate(String email, String password) throws SQLException {
@@ -37,13 +38,13 @@ public class UserDAO {
         Connection conn = null;
         try {
             conn = DBManager.getConnection();
-            conn.setAutoCommit(false); 
-            
+            conn.setAutoCommit(false);
             
             PreparedStatement userStmt = conn.prepareStatement(REGISTER_USER_SQL, Statement.RETURN_GENERATED_KEYS);
             userStmt.setString(1, name);
             userStmt.setString(2, email);
-            userStmt.setString(3, phone); 
+            userStmt.setString(3, phone);
+            userStmt.setString(4, password);
             userStmt.executeUpdate();
 
             
