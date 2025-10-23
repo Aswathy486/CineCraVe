@@ -28,23 +28,18 @@ public class HomePage extends JFrame {
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
-        
         JPanel headerPanel = createHeaderPanel();
         add(headerPanel, BorderLayout.NORTH);
 
-        
         contentPanel = new JPanel(); 
         contentPanel.setLayout(new BorderLayout(10, 10)); 
         contentPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
 
-        
         JPanel filterAndSearchPanel = createFilterAndSearchPanel();
         contentPanel.add(filterAndSearchPanel, BorderLayout.NORTH);
 
-        
         movieGridPanel = new JPanel(); 
         contentPanel.add(movieGridPanel, BorderLayout.CENTER);
-        
         
         loadMoviesToGrid(bookingService.getAllAvailableMovies()); 
 
@@ -57,7 +52,7 @@ public class HomePage extends JFrame {
         panel.setBackground(new Color(138, 43, 226)); 
         panel.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
 
-        JLabel logo = new JLabel("CineCraVe", SwingConstants.LEFT);
+        JLabel logo = new JLabel("🍿 CineCraVe", SwingConstants.LEFT);
         logo.setFont(new Font("Arial", Font.BOLD, 24));
         logo.setForeground(Color.WHITE);
         panel.add(logo, BorderLayout.WEST);
@@ -75,7 +70,18 @@ public class HomePage extends JFrame {
             label.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
-                    JOptionPane.showMessageDialog(HomePage.this, item + " clicked! Welcome, " + loggedInCustomer.getName());
+                    HomePage.this.setVisible(false);
+
+                    if (item.equals("My Bookings")) {
+                        
+                        new BookingStatusPage(HomePage.this, loggedInCustomer);
+                    } else if (item.equals("Profile")) {
+                       
+                        new ProfilePage(HomePage.this, loggedInCustomer, bookingService);
+                    } else {
+                        
+                        HomePage.this.setVisible(true);
+                    }
                 }
             });
             navPanel.add(label);
@@ -89,7 +95,6 @@ public class HomePage extends JFrame {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         
-        // --- 1. SEARCH BAR ---
         JTextField searchField = new JTextField("Search movies....");
         searchField.setPreferredSize(new Dimension(800, 30));
         searchField.setMaximumSize(new Dimension(800, 30));
@@ -102,13 +107,11 @@ public class HomePage extends JFrame {
         
         panel.add(Box.createVerticalStrut(15)); 
         
-        
         searchField.addActionListener(e -> {
             String query = searchField.getText();
             List<Movie> results = bookingService.searchMoviesByTitle(query);
             loadMoviesToGrid(results);
         });
-        
         
         JPanel filtersWrapper = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 0)); 
         
@@ -141,7 +144,6 @@ public class HomePage extends JFrame {
             for (String option : options) {
                 JMenuItem item = new JMenuItem(option);
                 item.addActionListener(ae -> {
-                    
                     button.setText(label + ": " + option); 
                 });
                 menu.add(item);
@@ -200,15 +202,13 @@ public class HomePage extends JFrame {
         card.add(details);
         card.add(Box.createVerticalStrut(5));
         
-       
         card.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                
                 HomePage.this.setVisible(false); 
                 
                 new ShowtimeSelectionPage(
-                    HomePage.this,
+                    HomePage.this, 
                     loggedInCustomer, 
                     bookingService, 
                     movie 
