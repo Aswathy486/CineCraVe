@@ -5,8 +5,8 @@ import java.awt.*;
 import java.awt.event.*;
 
 import com.cinecrave.model.Customer;
+import com.cinecrave.model.Movie;
 import com.cinecrave.service.BookingService;
-import com.cinecrave.model.Movie; 
 
 import java.util.List;
 
@@ -28,24 +28,24 @@ public class HomePage extends JFrame {
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
-        // --- 1. HEADER PANEL ---
+        
         JPanel headerPanel = createHeaderPanel();
         add(headerPanel, BorderLayout.NORTH);
 
-        // --- 2. MAIN CONTENT PANEL setup ---
+        
         contentPanel = new JPanel(); 
         contentPanel.setLayout(new BorderLayout(10, 10)); 
         contentPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
 
-        // Search Bar and Filter Section
+        
         JPanel filterAndSearchPanel = createFilterAndSearchPanel();
         contentPanel.add(filterAndSearchPanel, BorderLayout.NORTH);
 
-        // Initialize movie grid panel
+        
         movieGridPanel = new JPanel(); 
         contentPanel.add(movieGridPanel, BorderLayout.CENTER);
         
-        // Load initial movies upon creation
+        
         loadMoviesToGrid(bookingService.getAllAvailableMovies()); 
 
         add(contentPanel, BorderLayout.CENTER);
@@ -102,14 +102,14 @@ public class HomePage extends JFrame {
         
         panel.add(Box.createVerticalStrut(15)); 
         
-        // Listener for the Search Bar (when Enter is pressed)
+        
         searchField.addActionListener(e -> {
             String query = searchField.getText();
             List<Movie> results = bookingService.searchMoviesByTitle(query);
             loadMoviesToGrid(results);
         });
         
-        // --- 2. FILTER CONTROLS ---
+        
         JPanel filtersWrapper = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 0)); 
         
         String[] genres = {"Action", "Comedy", "Thriller", "Romance"};
@@ -141,7 +141,7 @@ public class HomePage extends JFrame {
             for (String option : options) {
                 JMenuItem item = new JMenuItem(option);
                 item.addActionListener(ae -> {
-                    // Filtering logic will be implemented here using bookingService
+                    
                     button.setText(label + ": " + option); 
                 });
                 menu.add(item);
@@ -200,12 +200,18 @@ public class HomePage extends JFrame {
         card.add(details);
         card.add(Box.createVerticalStrut(5));
         
+       
         card.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                JOptionPane.showMessageDialog(HomePage.this, 
-                    "Movie: " + movie.getTitle() + "\nRating: " + movie.getRating() + 
-                    "\n\nReady to view Showtimes!"
+                
+                HomePage.this.setVisible(false); 
+                
+                new ShowtimeSelectionPage(
+                    HomePage.this,
+                    loggedInCustomer, 
+                    bookingService, 
+                    movie 
                 );
             }
         });
