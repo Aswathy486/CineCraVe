@@ -2,8 +2,10 @@ package com.cinecrave.service;
 
 import com.cinecrave.dao.UserDAO;
 import com.cinecrave.dao.MovieDAO;
+import com.cinecrave.dao.ShowDAO;
 import com.cinecrave.model.User;
 import com.cinecrave.model.Movie;
+import com.cinecrave.model.Show;
 
 import java.sql.SQLException;
 import java.util.Collections;
@@ -13,13 +15,14 @@ public class BookingService {
     
     private final UserDAO userDAO;
     private final MovieDAO movieDAO;
-
+    private final ShowDAO showDAO;
     public BookingService() {
         this.userDAO = new UserDAO();
         this.movieDAO = new MovieDAO();
+        this.showDAO = new ShowDAO(); 
     }
 
-    // --- User Management ---
+
 
     public User authenticateUser(String email, String password) throws Exception {
         try {
@@ -36,7 +39,6 @@ public class BookingService {
         } catch (SQLException e) {
             System.err.println("Registration Database Error: " + e.getMessage());
             
-            // Check for specific error codes like duplicate email (UNIQUE constraint violation)
             if (e.getSQLState().startsWith("23")) { 
                 throw new Exception("Registration failed. Email is already in use.", e);
             }
@@ -44,7 +46,7 @@ public class BookingService {
         }
     }
     
-    // --- Movie Management ---
+
 
     public List<Movie> getAllAvailableMovies() {
         try {
@@ -63,6 +65,17 @@ public class BookingService {
             return movieDAO.searchMoviesByTitle(title);
         } catch (SQLException e) {
             System.err.println("Database Error searching movies: " + e.getMessage());
+            return Collections.emptyList();
+        }
+    }
+
+
+
+    public List<Show> getShowtimesByMovieId(int movieId) {
+        try {
+            return showDAO.getShowtimesByMovieId(movieId);
+        } catch (SQLException e) {
+            System.err.println("Database Error fetching showtimes: " + e.getMessage());
             return Collections.emptyList();
         }
     }
