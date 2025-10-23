@@ -30,19 +30,16 @@ public class ShowtimeSelectionPage extends JFrame {
         setLocationRelativeTo(parentFrame);
         setLayout(new BorderLayout());
 
-       
         JLabel header = new JLabel("Available Showtimes for " + movie.getTitle(), SwingConstants.CENTER);
         header.setFont(new Font("Arial", Font.BOLD, 18));
         header.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         add(header, BorderLayout.NORTH);
 
-        
         JPanel showtimeListPanel = createShowtimeListPanel();
         JScrollPane scrollPane = new JScrollPane(showtimeListPanel);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         add(scrollPane, BorderLayout.CENTER);
 
-        
         JButton backBtn = new JButton("← Back to Movies");
         backBtn.addActionListener(e -> {
             dispose();
@@ -60,7 +57,6 @@ public class ShowtimeSelectionPage extends JFrame {
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.setBorder(BorderFactory.createEmptyBorder(10, 15, 10, 15));
 
-        
         List<Show> showtimes = bookingService.getShowtimesByMovieId(selectedMovie.getMovieId());
 
         if (showtimes.isEmpty()) {
@@ -72,7 +68,6 @@ public class ShowtimeSelectionPage extends JFrame {
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("EEE, MMM d");
         
         for (Show show : showtimes) {
-            
             JButton showtimeBtn = new JButton(
                 "<html><b>" + show.getStartTime().format(timeFormatter) + "</b> (" + 
                 show.getStartTime().format(dateFormatter) + 
@@ -89,7 +84,7 @@ public class ShowtimeSelectionPage extends JFrame {
                 new SeatSelectionPage(
                     loggedInCustomer, 
                     bookingService, 
-                    show 
+                    show
                 );
             });
             
