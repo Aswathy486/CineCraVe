@@ -1,7 +1,6 @@
 package com.cinecrave.model;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 public class Booking {
     private int bookingId;
@@ -23,6 +22,7 @@ public class Booking {
     }
 
     public int getBookingId() { return bookingId; }
+    public int getCustomerId() { return customerId; }
     public int getShowId() { return showId; }
     public LocalDateTime getBookingTime() { return bookingTime; }
     public double getTotalPrice() { return totalPrice; }
