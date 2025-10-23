@@ -119,4 +119,4 @@ public class LoginPage extends JFrame {
         add(rightPanel);
         setVisible(true);
     }
-
+}
