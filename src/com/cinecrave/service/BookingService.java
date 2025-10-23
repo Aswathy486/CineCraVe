@@ -89,7 +89,6 @@ public class BookingService {
         }
     }
     
-    
     public List<Booking> getBookingHistory(int customerId) {
         try {
             return bookingDAO.getBookingsByCustomerId(customerId);
@@ -97,6 +96,15 @@ public class BookingService {
             System.err.println("Database Error fetching booking history: " + e.getMessage());
             e.printStackTrace();
             return Collections.emptyList();
+        }
+    }
+    
+    public int processBooking(int customerId, Show show, List<String> seatNumbers, double totalPrice) throws Exception {
+        try {
+            return bookingDAO.createBooking(customerId, show, seatNumbers, totalPrice);
+        } catch (SQLException e) {
+            System.err.println("Database Error during booking process: " + e.getMessage());
+            throw new Exception("Booking failed due to a system error.", e);
         }
     }
 }
