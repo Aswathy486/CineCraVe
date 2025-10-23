@@ -16,13 +16,14 @@ public class BookingService {
     private final UserDAO userDAO;
     private final MovieDAO movieDAO;
     private final ShowDAO showDAO;
+
     public BookingService() {
         this.userDAO = new UserDAO();
         this.movieDAO = new MovieDAO();
-        this.showDAO = new ShowDAO(); 
+        this.showDAO = new ShowDAO();
     }
 
-
+   
 
     public User authenticateUser(String email, String password) throws Exception {
         try {
@@ -46,7 +47,21 @@ public class BookingService {
         }
     }
     
+   
 
+    public boolean updateProfile(int userId, String name, String phone) throws Exception {
+        
+        System.out.println("SERVICE CONTRACT: User " + userId + " profile update called.");
+        return true; 
+    }
+    
+    public boolean resetPassword(int userId, String newPassword) throws Exception {
+        
+        System.out.println("SERVICE CONTRACT: User " + userId + " password reset called.");
+        return true; 
+    }
+
+    
 
     public List<Movie> getAllAvailableMovies() {
         try {
@@ -68,8 +83,6 @@ public class BookingService {
             return Collections.emptyList();
         }
     }
-
-
 
     public List<Show> getShowtimesByMovieId(int movieId) {
         try {
