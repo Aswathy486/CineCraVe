@@ -1,5 +1,4 @@
 package com.cinecrave.dao;
-
 import com.cinecrave.model.User;
 import com.cinecrave.model.Customer;
 import java.sql.*;
