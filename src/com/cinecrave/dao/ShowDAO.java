@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ShowDAO {
-
     public List<Show> getShowtimesByMovieId(int movieId) throws SQLException {
         List<Show> shows = new ArrayList<>();
         String sql = "SELECT * FROM `Show` WHERE movie_id = ? AND start_time >= NOW() ORDER BY start_time";
