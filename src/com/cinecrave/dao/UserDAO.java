@@ -2,7 +2,6 @@ package com.cinecrave.dao;
 import com.cinecrave.model.User;
 import com.cinecrave.model.Customer;
 import java.sql.*;
-
 public class UserDAO {
     
     private static final String AUTH_SQL = "SELECT user_id, name, email, phone, role FROM User WHERE email = ? AND password_hash = ?"; 
