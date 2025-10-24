@@ -5,7 +5,6 @@ import java.sql.*;
 public class UserDAO {
     
     private static final String AUTH_SQL = "SELECT user_id, name, email, phone, role FROM User WHERE email = ? AND password_hash = ?"; 
-    
     private static final String REGISTER_USER_SQL = "INSERT INTO User (name, email, phone, password_hash, role) VALUES (?, ?, ?, ?, 'Customer')";
     private static final String REGISTER_CUSTOMER_SQL = "INSERT INTO Customer (user_id) VALUES (?)";
 
