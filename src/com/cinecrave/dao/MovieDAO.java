@@ -3,7 +3,6 @@ import com.cinecrave.model.Movie;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-
 public class MovieDAO {
 
     private static final String SELECT_ALL_SQL = "SELECT movie_id, title, duration_minutes, genre, language, rating, description FROM Movie";
